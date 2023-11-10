@@ -1,18 +1,27 @@
-import { addDoc, collection } from 'firebase/firestore';
-import { Field, Form, Formik } from 'formik';
-import React from 'react'
-import { db } from '../Config/Firebase';
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { Field, Form, Formik } from "formik";
+import React from "react";
+import { db } from "../Config/Firebase";
 
-function Mudal({mudal , setMudal}) {
-    const addCont = async (cont)  => {
-        try {
-            const contRef = collection(db , 'contacts');
-        await addDoc(contRef , cont)
-        setMudal(false)
-        } catch (error) {
-            console.log(error)
-        }
+function Mudal({ mudal, setMudal, updateMudal, cont }) {
+  const addCont = async (cont) => {
+    try {
+      const contRef = collection(db, "contacts");
+      await addDoc(contRef, cont);
+      setMudal(false);
+    } catch (error) {
+      console.log(error);
     }
+  };
+  const upDateContact = async (contact, id) => {
+    console.log(contact , id)
+    try {
+      const contactRef = doc(db, "contacts", id);
+      await updateDoc(contactRef, contact);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div
       id="authentication-modal"
@@ -51,24 +60,44 @@ function Mudal({mudal , setMudal}) {
             <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">
               Add New Contact
             </h3>
-            <Formik initialValues={{
-                name : '', 
-                email : '',
-            }}
-            onSubmit={(values) => {
-                addCont(values)
-            }}>
-                <Form className='flex flex-col space-y-3 text-white'>
-                    <div className='flex flex-col'>
-                        <label htmlFor="name">Name</label>
-                        <Field name='name' className=' py-1 px-1 bg-transparent border-b border-white outline-none'/>
-                    </div>
-                    <div className='flex flex-col'>
-                    <label htmlFor="email">Email</label>
-                    <Field name='email' className='py-1 px-1 bg-transparent border-b border-white outline-none'/>
-                    </div>
-                    <button type='submit' className=' bg-blue-500 px-3 py-1.5 text-white rounded-md'>Add New Contact</button>
-                </Form>
+            <Formik
+               initialValues={
+                updateMudal
+                  ? {
+                      name: cont.name,
+                      email: cont.email,
+                    }
+                  : {
+                      name: "",
+                      email: "",
+                    }
+              }
+              onSubmit={(values) => {
+                updateMudal ? upDateContact(values, cont.id) : addCont(values);
+              }}
+            >
+              <Form className="flex flex-col space-y-3 text-white">
+                <div className="flex flex-col">
+                  <label htmlFor="name">Name</label>
+                  <Field
+                    name="name"
+                    className=" py-1 px-1 bg-transparent border-b border-white outline-none"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="email">Email</label>
+                  <Field
+                    name="email"
+                    className="py-1 px-1 bg-transparent border-b border-white outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className=" bg-blue-500 px-3 py-1.5 text-white rounded-md"
+                >
+                  {updateMudal ? "Update" : "Add New"} Contact
+                </button>
+              </Form>
             </Formik>
             {/* <Formik
               initialValues={{
@@ -118,7 +147,7 @@ function Mudal({mudal , setMudal}) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Mudal
+export default Mudal;
