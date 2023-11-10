@@ -14,7 +14,6 @@ function Mudal({ mudal, setMudal, updateMudal, cont }) {
     }
   };
   const upDateContact = async (contact, id) => {
-    console.log(contact , id)
     try {
       const contactRef = doc(db, "contacts", id);
       await updateDoc(contactRef, contact);
